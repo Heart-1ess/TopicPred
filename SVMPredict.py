@@ -23,18 +23,6 @@ from wordcloud import WordCloud, STOPWORDS
 from sklearn.svm import SVC
 from textblob import TextBlob
 from PIL import Image
-# 将聚类结果标签转换为原始文本数据
-def labels_to_original(labels, forclusterlist):
-    assert len(labels) == len(forclusterlist)
-    maxlabel = max(labels)
-    numberlabel = [i for i in range(0, maxlabel + 1, 1)]
-    numberlabel.append(-1)
-    result = [[] for i in range(len(numberlabel))]
-    for i in range(len(labels)):
-        index = numberlabel.index(labels[i])
-        result[index].append(forclusterlist[i])
-    return result
-
 
 # 话题预测追踪
 def topicPredict(new_text_data: list, existing_topics: pd.DataFrame):

@@ -3,6 +3,9 @@ import os
 
 
 def loadDict(fileName, score):
+    '''
+    Load dict from file.
+    '''
     wordDict = {}
     with open(fileName, encoding='utf-8') as fin:
         for line in fin:
@@ -12,6 +15,9 @@ def loadDict(fileName, score):
 
 
 def appendDict(wordDict, fileName, score):
+    '''
+    Append file to dict.
+    '''
     with open(fileName, encoding='utf-8') as fin:
         for line in fin:
             word = line.strip()
@@ -19,6 +25,9 @@ def appendDict(wordDict, fileName, score):
 
 
 def loadExtentDict(fileName, level):
+    '''
+    Load extent dict.
+    '''
     extentDict = {}
     for i in range(level):
         with open(fileName + ".txt", encoding='utf-8') as fin:
@@ -29,6 +38,16 @@ def loadExtentDict(fileName, level):
 
 
 def getScore(content, emotional_dict_path):
+    '''
+    Get emotional score from dictionaries.
+    
+    input:
+        content: Contents need to calculate emotional score.
+        emotional_dict_path: Path of dictionaries of words and emotions it conveys.
+    
+    output:
+        totalScore: The emotion score the content contains.
+    '''
     postDict = loadDict(os.path.join(emotional_dict_path, "积极情感词语.txt"), 1)  # 积极情感词典
     negDict = loadDict(os.path.join(emotional_dict_path, "消极情感词语.txt"), -1)  # 消极情感词典
     inverseDict = loadDict(os.path.join(emotional_dict_path, "否定词语.txt"), -1)  # 否定词词典
