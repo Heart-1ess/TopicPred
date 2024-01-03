@@ -9,6 +9,8 @@ from nltk.stem import WordNetLemmatizer
 
 from dateutil.parser import parse
 
+from datetime import datetime
+
 import re
 import pandas as pd
 import numpy as np
@@ -107,6 +109,9 @@ def processTime_cn(df: pd.DataFrame, time_interval: int) -> (pd.DataFrame, list)
     
     # sort with time ascending and slice with intervals.
     df = df.sort_values('time', ascending=True)
+    
+    starttime = "2023-10-01 00:00:00"
+    df = df[df['time'] >= datetime.strptime(starttime, "%Y-%m-%d %H:%M:%S")]
     df = df.reset_index()
     time_slices = []
     time_now = df['time'][0]
@@ -320,14 +325,18 @@ def processTime_en(df: pd.DataFrame, time_interval: int) -> (pd.DataFrame, list)
         time_slices: time slices after splition. Use for ldaseqModel.
     '''
     # for each element apply parsing method.
-    df['time'].apply(parse)
+    df['time'] = df['time'].apply(parse)
     
     # sort with time ascending and slice with intervals.
     df = df.sort_values('time', ascending=True)
+    
+    starttime = "2023-10-01 00:00:00"
+    df = df[df['time'] >= datetime.strptime(starttime, "%Y-%m-%d %H:%M:%S")]
+    
     df = df.reset_index()
     time_slices = []
     time_now = df['time'][0]
-    while (df['time'][-1] > time_now):
+    while (df['time'].tolist()[-1] > time_now):
         time_slices.append(time_now)
         time_now += pd.DateOffset(days=time_interval)
     return df, time_slices
@@ -355,6 +364,7 @@ def dataProcess(df: pd.DataFrame, stopwords: list = None, lang: str = "zh-cn") -
     # 中文处理
     if (lang == "zh-cn"):
         for each in contents:
+            each = str(each)
             # clear the text.
             temp_1 = clearText_cn(each)
             # split the words and preserve nouns, also delete stopwords.
@@ -371,6 +381,7 @@ def dataProcess(df: pd.DataFrame, stopwords: list = None, lang: str = "zh-cn") -
         
         # start processing.
         for each in contents:
+            each = str(each)
             # clear the text.
             temp_1 = clearText_en(each)
             

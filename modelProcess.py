@@ -15,8 +15,8 @@ def BoW(strList: list, dicPath: str = None) -> (corpora.Dictionary, list):
         corpus: list of bag vectors of each article.
     '''
     dic = corpora.Dictionary(strList)
-    # 出现次数至少为3，至多在一半文档中出现，词典大小最多3000个词
-    dic.filter_extremes(no_below=1, no_above=0.8, keep_n=3000)
+    # 出现次数至少为3，至多在80%文档中出现，词典大小最多10000个词
+    dic.filter_extremes(no_below=3, no_above=0.8, keep_n=10000)
     
     # 保存词典
     if dicPath:
