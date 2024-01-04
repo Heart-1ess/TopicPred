@@ -105,7 +105,7 @@ def TopicExtraction(textList: list, num_topics: int):
     plt.title("Perplexity")
     plt.xlabel('num_topics')
     plt.ylabel('Perplexity')
-    xticks(np.linspace(1, num_topics, num_topics, endpoint=True)) # 保证x轴刻度为1
+    xticks(np.linspace(1, num_topics, num_topics, endpoint=True))                       # Make sure the scale of X is 1.
 
     ax2 = fig.add_subplot(1, 2, 2)
     plt.plot(x, coherence, marker="o")
@@ -141,9 +141,8 @@ def hotSpotAnalysis(lda_model: models.ldamodel.LdaModel, df: pd.DataFrame, dic: 
     zeros = np.zeros(shape=[df.shape[0],topic_nums])
     doc_dist = pd.DataFrame(zeros, columns=[str(i) for i in range(0, topic_nums)], index=range(df.shape[0]))
     i = 0
-    for each in df['contents']:
-        # 获取每篇文档的主题分布，并添加入特征矩阵
-        doc_bow = dic.doc2bow(each) # doc2bow
+    for each in df['contents']:                                                         # Get topic distribution of each document and add to feature matrix.
+        doc_bow = dic.doc2bow(each)                                                     # doc2bow
         doc_lda = lda_model[doc_bow]
         for each in doc_lda[0]:
             doc_dist[str(each[0])][i] = each[1]
@@ -176,11 +175,11 @@ def visualize(lda_model: models.ldamodel.LdaModel, corpus_tfidf: list, dic: corp
     output:
         None
     '''
-    # pyLDAvis可视化
+    # Visualization with pyLDAvis.
     data = pyLDAvis.gensim.prepare(topic_model=lda_model, corpus=corpus_tfidf, dictionary=dic)
     pyLDAvis.save_html(data, pyLDAvis_save_path)
     
-    # 词云
+    # Wordcloud displayment.
     wordCloud(all_top_k=all_top_k, pic_path=wordCloud_pic_path, font_path=wordCloud_font_path, save_path=wordCloud_save_path)
     
     return
