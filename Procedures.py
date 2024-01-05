@@ -119,7 +119,7 @@ def TopicExtraction(textList: list, num_topics: int):
     return model_list, dic, corpus_tfidf
     
 # Procedure 4 - hotSpot analysis using KMeans and topics
-def hotSpotAnalysis(lda_model: models.ldamodel.LdaModel, df: pd.DataFrame, dic: corpora.Dictionary,topic_nums: int, num_words: int, emotional_dict_path: str):
+def hotSpotAnalysis(lda_model: models.ldamodel.LdaModel, df: pd.DataFrame, dic: corpora.Dictionary,topic_nums: int, num_words: int, emotional_dict_path: str, k: int = None):
     '''
     Analyse the hotspot topics and extract hotspot topics.
     
@@ -149,7 +149,7 @@ def hotSpotAnalysis(lda_model: models.ldamodel.LdaModel, df: pd.DataFrame, dic: 
         i += 1
     
     # KMeans clustering.
-    clusters, n_clusters = KMeansGrouping(doc_dist)
+    clusters, n_clusters = KMeansGrouping(doc_dist, k)
     hot_words = hotSpot(cluster=clusters, topic=topics, dist=doc_dist, n=n_clusters)
     
     # Sentiment analysis.

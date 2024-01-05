@@ -35,7 +35,7 @@ import re
 #     return result
 
 # KMeans聚类
-def KMeansGrouping(dist: pd.DataFrame) -> (list, int):
+def KMeansGrouping(dist: pd.DataFrame, k: int = None) -> (list, int):
     '''
     Grouping with documents on topic distribution with KMeans.
     
@@ -58,27 +58,30 @@ def KMeansGrouping(dist: pd.DataFrame) -> (list, int):
     # 假设数据为 X
     # X = ...
     # K-means聚类方法开始
-    # 存储每一轮的best_k
-    best_k_num = []
-    # 尝试不同的 K 值
-    for d in range(0, 4):
-        # 存储每个 K 对应的轮廓系数
-        silhouette_scores = []
-        for k in range(2, 9):  # 选择一个合适的 K 范围
-            kmeans = KMeans(n_clusters=k)
-            labels = kmeans.fit_predict(dist)
-            silhouette_avg = silhouette_score(dist, labels)
-            # 将每一轮的轮廓系数保存
-            silhouette_scores.append(silhouette_avg)
-            print(f"For n_clusters = {k}, the average silhouette_score is : {silhouette_avg}")
+    if not k:
+        # 存储每一轮的best_k
+        best_k_num = []
+        # 尝试不同的 K 值
+        for d in range(0, 4):
+            # 存储每个 K 对应的轮廓系数
+            silhouette_scores = []
+            for k in range(2, 9):  # 选择一个合适的 K 范围
+                kmeans = KMeans(n_clusters=k)
+                labels = kmeans.fit_predict(dist)
+                silhouette_avg = silhouette_score(dist, labels)
+                # 将每一轮的轮廓系数保存
+                silhouette_scores.append(silhouette_avg)
+                print(f"For n_clusters = {k}, the average silhouette_score is : {silhouette_avg}")
 
-        # 根据轮廓系数选择最优的 K
-        best_k = np.argmax(silhouette_scores) + 2  # 加2是因为从K=2开始
-        print(f"Best K value based on silhouette score: {best_k}")
-        best_k_num.append(best_k)
+            # 根据轮廓系数选择最优的 K
+            best_k = np.argmax(silhouette_scores) + 2  # 加2是因为从K=2开始
+            print(f"Best K value based on silhouette score: {best_k}")
+            best_k_num.append(best_k)
 
-    best_k_mean_value = np.mean(best_k_num)
-    print(f"bestk mean value = {math.floor(best_k_mean_value)}")
+        best_k_mean_value = np.mean(best_k_num)
+        print(f"bestk mean value = {math.floor(best_k_mean_value)}")
+    else:
+        best_k_mean_value = k
 
     # 找到最优的K值后，对数据文本进行聚类
     clf = KMeans(n_clusters=math.floor(best_k_mean_value))
@@ -172,7 +175,7 @@ def hotSpot(cluster: np.ndarray, topic: list, dist: pd.DataFrame, n: int):
     hot_spots = []
     for clusts, hotwords in cluster_words.items():
         sort_result = sorted(hotwords.items(), key=lambda x: -x[1])
-        hot_spots.append((docs[clusts], [i[0] for i in sort_result[:10]], doc_index[clusts]))
+        hot_spots.append((docs[clusts], [(i[0], i[1] / docs[clusts]) for i in sort_result[:10]], doc_index[clusts]))
     
     return hot_spots
     
@@ -196,7 +199,7 @@ def topic_analyze(hot_spots: list, emotional_dict_path: str):
         top_k_features = each[1]
         doc_num = each[0]
         print("热点话题: {}, 属于此话题的文档数: {}".format(top_k_features, doc_num))
-        flattened_string = ' '.join(top_k_features)
+        flattened_string = ' '.join([i[0] for i in top_k_features])
         print("字符串热点话题:", flattened_string)
         # 情感分析
         score = getScore(flattened_string, emotional_dict_path)
